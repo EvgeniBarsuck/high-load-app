@@ -1,0 +1,117 @@
+openapi: "3.0.0"
+info:
+  title: "Swagger for service"
+  version: "1.0.0"
+paths:
+  /users/change-balance/{userId}:
+    put:
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            format: UUID
+      summary: Changing user balance
+      operationId: changeUserBalance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeUserBalanceBody'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeUserBalanceResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/get-user-balance/{userId}:
+    get:
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            format: UUID
+      summary: Get user balance
+      operationId: getUserBalance
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserBalanceResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'   
+        
+
+components:
+  schemas:
+    ChangeUserBalanceBody:
+      type: object
+      properties:
+        transactionAmount:
+          type: string
+          example: '2.3'
+        transactionType:
+          type: string
+          enum: ['SELL', 'BUY']
+            
+    ChangeUserBalanceResponse: 
+      type: object
+      properties:
+        currentBalance:
+          type: number
+          format: decumal
+          example: 103.2
+
+    GetUserBalanceResponse:
+      type: object
+      properties:
+        currentBalance:
+          type: number
+          format: decumal
+          example: 103.2
+    
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: number
+        metadata:
+          type: object
+          

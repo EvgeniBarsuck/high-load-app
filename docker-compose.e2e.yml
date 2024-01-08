@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  test-api-db:
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PG_DATA: /var/lib/postgresql/data
+    ports: 
+     - "5433:5432"
+    networks:
+      - webnet      
+
+  test-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.test.api
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    working_dir: /usr/src/app
+    command: bash -c "yarn test:e2e"
+    ports:
+      - "3500:3500"
+    environment:
+      NODE_ENV: test
+      DATABASE_HOST: test-api-db
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: admin
+      DATABASE_NAME: test
+      APPLICATION_PORT: 3000
+    depends_on:
+      - test-api-db
+    networks:
+      - webnet
+
+networks:
+  webnet:
+
+volumes:
+  pgdata:
+  logs:
